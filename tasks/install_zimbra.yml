@@ -1,0 +1,15 @@
+# roles/bind/tasks/install_zimbra.yml
+# Install Zimbra Software
+---
+
+- name: Untar Zimbra src
+  unarchive: src=/opt/src/{{ zimbra_file }}.tgz dest=/tmp/ copy=no
+
+- name: Install Zimbra Software
+  shell: yes 'Y' | /tmp/{{ zimbra_file }}/install.sh -s --platform-override -x
+  args:
+    chdir: /tmp/{{ zimbra_file }}/
+    creates: /opt/zimbra/bin/zmprov
+
+- name: Remove Zimbra src
+  file: path=/tmp/{{ zimbra_file }} state=absent

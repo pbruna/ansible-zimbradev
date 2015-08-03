@@ -1,0 +1,25 @@
+{% if zimbra_domains is defined %}
+{% for domain in  zimbra_domains %}
+cd {{ domain.name }} o {{ domain.o | default('--')}}
+{% if domain.accounts is defined %}
+{% for account in domain.accounts %}
+ca {{ account.name }} {{ password | default(12345678)}} zimbraIsAdminAccount {{zimbra_is_admin_account | default('FALSE')}} zimbraIsDomainAdminAccount {{ zimbra_is_domain_admin_account | default('FALSE') }}
+{% endfor %}
+{% endif %}
+{% if domain.distribution_lists is defined %}
+{% for dl in domain.distribution_lists %}
+cdl {{ dl.name }}
+{% if dl.members is defined %}
+{% for member in dl.members %}
+adlm {{ dl.name }} {{ member }}
+{% endfor %}
+{% endif %}
+{% if dl.authorized_senders is defined %}
+{% for user in dl.authorized_senders %}
+grr dl {{ dl.name }} usr {{ user }} sendToDistList
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}

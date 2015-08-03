@@ -1,0 +1,15 @@
+---
+# vars file for cartertdte.mta
+zimbra_required_packages:
+  - nc
+  - sudo
+  - libidn
+  - gmp
+  - libaio
+  - libstdc++
+  - unzip
+  - perl-5.10.1
+  - sysstat
+  - sqlite
+  - libreoffice
+  - libreoffice-headless

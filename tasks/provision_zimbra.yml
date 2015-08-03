@@ -1,0 +1,17 @@
+# roles/bind/tasks/provision_zimbra.yml
+# Provision Zimbra with users and etc.
+---
+
+- name: Copy provisioning file
+  template:
+    src: zimbra_provisioning.j2
+    dest: /tmp/zimbra_provisioning
+    owner: zimbra
+    mode: '0644'
+
+- name: Provision Zimbra
+  sudo_user: zimbra
+  shell: /opt/zimbra/bin/zmprov < /tmp/zimbra_provisioning
+
+- name: Delete provisioning file
+  file: path=/tmp/zimbra_provisioning state=absent

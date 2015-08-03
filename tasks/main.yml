@@ -1,0 +1,30 @@
+---
+# tasks file for cartertdte.mta
+
+- name: Install Zimbra Dependencies
+  yum: name={{ item }} state=present
+  with_items:
+    - "{{ zimbra_required_packages }}"
+
+- name: Create Source Software Directory
+  file: path=/opt/src state=directory
+
+- name: 'Download Zimbra .tgz file'
+  get_url: url={{ zimbra_download_url }} dest=/opt/src/{{ zimbra_file }}.tgz timeout=60 sha256sum={{ zimbra_256sum_file }}
+
+- name: Check if Zimbra is installed
+  stat: path=/opt/zimbra/bin/zmprov
+  register: zimbra_check_installation
+
+- include: install_zimbra.yml
+  when: zimbra_check_installation.stat.islnk is not defined
+
+- name: Check if Zimbra is configured
+  command: /opt/zimbra/bin/zmprov gd {{ zimbra_default_domain }}
+  ignore_errors: yes
+  register: zimbra_check_configuration
+
+- include: configure_zimbra.yml
+  when: zimbra_check_configuration.rc != 0
+
+- include: provision_zimbra.yml

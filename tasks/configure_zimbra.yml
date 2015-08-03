@@ -1,0 +1,13 @@
+# roles/bind/tasks/confgiure_zimbra.yml
+# Configuration of Zimbra
+---
+
+- name: Copy configuration file
+  template:
+    src: zimbra_configuration.conf.j2
+    dest: /tmp/zimbra_configuration.conf
+    owner: zimbra
+    mode: '0644'
+
+- name: Run Zimbra zmsetup.pl
+  command: /opt/zimbra/libexec/zmsetup.pl -c /tmp/zimbra_configuration.conf
