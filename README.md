@@ -1,38 +1,100 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+Install, configure and provision a Full Zimbra Server.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+* CentOS 6, 7
+* RHEL 6, 7
+* Correctly configure DNS
+* Correctly configued `/etc/hosts` file
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+* `zimbra_download_url`, URL to download Zimbra
+* `zimbra_file`, name of the downloaded file
+* `zimbra_256sum_file`, `SHA256SUM` of the file
+* `zimbra_password`, password for admin and everything
+* `zimbra_default_domain`, default domain to create
 
-Dependencies
-------------
+**zimbra_domains**
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+* `name`, name of a domain
+* `accounts`, Array of accounts
+* `distribution_lists`, Array of Distribution Lists
+
+**accounts**
+
+* `name`, email of the account
+* `password`, if empty the default pass is `12345678`
+
+**distribution_lists**
+
+* `name`, email of the Distribution List
+* `members`, Array of email addresses of members
+* `authorized_senders`, Array of domain accounts who can send email to the list
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+This is an example Playbook that I use for development using Vagrant:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yaml
+---
+- hosts: all
+  sudo: yes
+  vars:
+    zimbra_download_url: https://files.zimbra.com/downloads/8.6.0_GA/zcs-8.6.0_GA_1153.RHEL6_64.20141215151155.tgz
+    zimbra_file: zcs-8.6.0_GA_1153.RHEL6_64.20141215151155
+    zimbra_256sum_file: c2278e6632b9ca72487afdf24da2545238e325338090a9d8ad6e99b39593561c
+    zimbra_password: 12345678
+    zimbra_default_domain: 'zboxapp.dev'
+
+    zimbra_domains:
+      - name: 'itlinux.dev'
+        o: 'ITLinux'
+        accounts:
+          - name: 'pbruna@itlinux.dev'
+            zimbra_is_admin_account: TRUE
+            password: 12345678
+
+      - name: 'it-linux.dev'
+        o: 'ITLinux'
+
+      - name: 'zbox.dev'
+        o: 'ZBOX'
+        accounts:
+          - name: 'zboxadmin@zbox.dev'
+            password: 12345678
+            zimbra_is_domain_admin_account: TRUE
+
+        distribution_lists:
+          - name: 'locked@zbox.dev'
+            members:
+              - '1@example.com'
+              - '2@example.com'
+              - 'zboxadmin@zbox.dev'
+            authorized_senders:
+              - 'zboxadmin@zbox.dev'
+
+      - name: 'empty.com'
+        o: 'ZBOX'
+
+  roles:
+    - role: pbruna.zimbradev
+```
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Developed with love by [Patricio Bruna](https://www.twitter.com/pbruna) at [ITLinux](http://www.itlinux.cl/)
+
+If you need to contact me for help or anything please submit an `Issue`.
