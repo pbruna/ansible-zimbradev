@@ -1,4 +1,4 @@
-Role Name
+Ansible Zimbra
 =========
 
 Install, configure and provision a Full Zimbra Server.
